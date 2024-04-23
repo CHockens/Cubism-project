@@ -2,22 +2,18 @@
 /*******************************************************************
  *                        CHESIRE'S ROOM
  * Program Instructions: 
- * Click the door knob to open and close the door
- * Click the lamp shade to turn off the light \
- * To see Chesire's Room, close the door AND turn off the lights
- *                              
+ * Click the door knob to open door and close door
+ * Click the light bulb to turn off the light
+ * Turn off the light to see Chesire's Room
+ *                             
  *                           (₌♥ᆽ♥₌)
  * *****************************************************************/
-//Class Card: Non-static global variables. 
+//Class Card: dynamic global variables. 
 let upWidth = 0;    //Updates width of card
 let angle = 0;      //Updates oscillation speed for card
 
-//Mushrooms
-let bigMush;
-let miniMush;
-let cornerMush;
-let tiniMush;
-//Card Object Instances
+
+// Playing Cards - Class Card 
 let CardsAboveEyes = [];
 let CardsBelowEyes = [];
 let spinningCards = [];
@@ -27,46 +23,43 @@ let teethLeft;
 let teethRight;
 let teethRightFix;
 
-let aliceClock;
-let miniClock;
-
-//Card Object Arrays: "changeable" variables that updates the location (xy) and size (wh) of card
+// Arrays for card objects. Each index updates. location (x, and y) and size (w and h) of card
 // xywh[0] is x coordinate of card, xywh[1] is y coordinate of card, xywh[2] is width, and xywh[3] is height
 let xywh = [0, 0, 0, 0]
 let xywh1 = [0, 0, 0, 0]
 
 
 //Boolean - Display Interaction
-let colorValue = 1;   //Click lamp to change. Shows Cheshire's room if door is closed (imgValue = 1)
-let imgValue = 1;     //Click door knobs. Opens and closes door.
+let lampValue = 0;   //Click lamp to change. Shows Cheshire's room if door is closed (doorValue = 1)
+let doorValue = 0;     //Click door knobs. Opens and closes door.
 
+let infinity = 0;
+
+let bubbleY1 = 750, bubbleY2 = 658, bubbleY3 = 705;
+let bubbleX4, bubbleY4 = 680 
+let bubbleX5, bubbleY5 = 680
 
 function preload()
 {
-  doorOpen = loadImage('doorOpen.jpg')
-  doorClosed = loadImage('doorClosed.jpg')
+  Closed_ON = loadImage('Closed_ON.png')    // lampValue = 0   doorValue = 0
+  Open_ON = loadImage('Open_ON.png')        // lampValue = 0   doorValue = 1
+  Open_LOW = loadImage('Open_LOW.png')      // lampValue = 1  
+  Open_OFF = loadImage('Open_OFF.jpg')      // lampValue = 2   
+  
 }
-    // ellipse(570, 350, 35, 7)
  
-
-
 function setup() {
   createCanvas(700, 900);
 
-  //Mushrooms
+  //Mushrooms Objects
   pinkMush = new eclipse(173, 655, 35, 7, 170, 660, 60, 15)
   purpleMush = new eclipse(118, 713, 15, 5, 115, 714, 40, 10)
   redMush = new eclipse(575, 750, 20, 5, 570, 750, 55, 15) 
   tiniMush = new eclipse(464, 720, 7, 5, 465, 720, 26, 6)
-
-  //Object Clocks
-  aliceClock = new eclipse(275, 154, 75, 80, 275, 154, 58, 70)
   
   //Object eclipse
   teethLeft = new eclipse(233, 345, 250, 250, 243, 345, 270, 290)
   teethRight = new eclipse(323, 345, 250, 250, 313, 345, 270, 290)
-
-
 
   //Object Cards
   for(let i = 0; i < 10; i++){
@@ -97,22 +90,25 @@ function draw() {
   //Color
   let lightPink = color(194,120,184)
 
-  //Importing Images
-  if(imgValue == 0)
-  {image(doorOpen,50,50)
-  doorOpen.resize(width*.9, height*.9)}
-  if(imgValue == 1){
-  image(doorClosed,50,50)
-  doorClosed.resize(width*.9, height*.9)}
 
-  //Functions
-    //Lit Room
-    room();
-    lamp();
+  if(lampValue == 0 && doorValue == 0)
+    {image(Closed_ON, 50, 40)
+      Closed_ON.resize(width*.9, height*.9)}
 
-  
+  if(lampValue == 0 && doorValue == 1)
+  {image(Open_ON, 50, 40)
+    Open_ON.resize(width*.9, height*.9)}  
+
+  if(lampValue == 1)      //Cheshires Room
+  {image(Open_LOW, 50, 40)
+    Open_LOW.resize(width*.9, height*.9)}
+
+  if(lampValue == 2)      //Cheshires Room
+  {image(Open_OFF, 50, 40)
+    Open_OFF.resize(width*.9, height*.9)}
+
     //Chesire's Room
-    if(colorValue == 1 && imgValue == 1){
+    if(lampValue == 2){
       
       // Cards - Object Array
       for(let i = 0; i < 10; i++){
@@ -123,23 +119,47 @@ function draw() {
       }
     cheshireEyes();
     cheshireSmile();
-    cheshireNose();
+    mushroomDots();
 
-    //color(65,65,65) - grey
-    //color(100,0,0) - red
-    aliceClock.clock(color(100,0,0), 2)
-    
 
-    //MushRooms
-    // ellipse(570, 350, 35, 7)
-    // ellipse(570, 350, 60, 30)
+  
+      //MushRooms
       push()
       pinkMush.mushroom(color(153, 0, 76), 5, 60, 330, 210, .9)
       purpleMush.mushroom(color(120, 23, 100), 15, 40, 30, 200, .85)
-      redMush.mushroom(color(100,0,0), 9, 90, 353, 190,.85)
-      tiniMush.mushroom("purple", 10, 40, 30, 200, .85)
-      pop()
-      push(); fill("black"); ellipse(118, 713, 15, 5); pop(); //colors inside of little mushroom
+      //redMush.mushroom(color(100,0,0), 9, 90, 353, 190,.85)
+      tiniMush.mushroom("purple", 10, 30, 30, 200, .85)
+
+      //Bubbles
+      if(bubbleY1 < 50){bubbleY1 = 741}
+      bubbleY1--;
+      if(bubbleY2 < 50){bubbleY2 = 658}
+      bubbleY2--;
+      if(bubbleY3 < 50){bubbleY3 = 705}
+      bubbleY3--;
+      bubbles(bubbleY1, bubbleY2, bubbleY3);
+
+      if(bubbleY1 <= 500){
+         bubbleX4 = 120 + 20*cos(infinity)
+         bubbleY4--;
+         if (bubbleY4 < 50){bubbleY4 = 680}
+         ellipse(bubbleX4, bubbleY4, 9, 9)
+      }
+         
+      if(bubbleY2 <= 500){
+        bubbleX5 = 165 - 25*cos(infinity)
+        bubbleY5--;
+        if (bubbleY5 < 50){bubbleY5 = 680}
+        ellipse(bubbleX5, bubbleY5, 5, 5)
+
+      }
+
+      //Diamonds
+      infinity++;
+      diamond = new eclipse(400, 100, 1, 70, 400, 100, 0 + abs(50*cos(infinity)), 1) //vertica, then horizontal
+      diamond.diamond(color(120, 23, 80))
+      smallDiamond = new eclipse(435, 125, 1, 40, 435, 125, 0 + abs(20*cos(infinity)), 1)
+      smallDiamond.diamond(color(120, 23, 80))
     
     }
 
@@ -147,21 +167,21 @@ function draw() {
   //Text Display: Lamp is OFF(1) or ON(0)
   textSize(15)
   fill(130,10,100)
-  text('colorValue: ',300, 889);
-  text(colorValue,380, 889);
+  text('lampValue: ',300, 889);
+  text(lampValue,380, 889);
 
   //Text Display: Door is OPEN(0) or CLOSED(1)
   textSize(15)
   fill(130,10,100)
-  text('imgValue: ',400, 889);
-  text(imgValue,470, 889);
+  text('doorValue: ',400, 889);
+  text(doorValue,470, 889);
 }
 
 //Functions
 
 function room()
 {
-  if (colorValue == 1){   //Dark Room
+  if (lampValue == 2){   //Dark Room
   fill(0,0,0)
   stroke(64,64,122)}
   else                  //Lit Room
@@ -226,15 +246,19 @@ function cheshireSmile(){
   teethLeft.build(68, 180, 10, 1)   //Left Teeth.Lines (point toward R eye)
   teethRight.build(30, 110, 10, 0)  //Right Teeth Lines (point toward R eye)
   teethRight.build(30, 110, 10, 2)  //Right Teeth Lines (point toward L eye)
-  }
 
-function cheshireNose(){
+  //Nose
   arc(258,460,40, 40, 260, 0)
   arc(298,460,40,40, 180,280)
   point(210,443); point(225, 439); point(220,447) //Left Whiskers
   point(325,441); point(340, 445); point(330,449) //Right Whiskers
-}
+  }
 
+function cheshireTail(){
+  stroke("turquoise")
+  noFill()
+  ellipse(570,770,200)
+}
 
 function lamp()
 {
@@ -246,7 +270,7 @@ function lamp()
     endShape()
   }
 
-  if (colorValue == 1){
+  if (lampValue == 1){
     stroke(64,64,122)
     lampShape();
     quad(410,680,415,680,410,830,417,830)
@@ -259,6 +283,25 @@ function lamp()
     lampShape();
     quad(390,630,420,630,) 
   }
+}
+
+function mushroomDots(){
+  push()
+  noStroke()
+  fill(color(153, 0, 76))
+  //Pink Mushroom Dots
+  ellipse(159, 640, 15, 9); 
+  ellipse(185, 645, 8, 8); 
+  ellipse(174, 635, 6, 3)
+  //Purple Mushroom Dots
+  fill(color(120, 23, 100))
+  ellipse(110, 700, 7, 7); 
+  ellipse(119, 705, 4, 4)
+  //Small Purple Mushroom dots
+  fill("purple")
+  ellipse(464,706, 4, 3)
+  ellipse(468,713, 5, 5)
+  pop()
 }
 
 function drawGrid() {
@@ -280,26 +323,33 @@ function drawGrid() {
     text("(" + mouseX + ", " + mouseY + ")", 100, 889);
 }
 
-
 function mouseClicked() {
 
-  if ((mouseX >= 395 && mouseX <= 420) && (mouseY >= 630 && mouseY <= 680)){
-  colorValue++;
-  if (colorValue == 2) {
-    colorValue = 0;
+
+  if ((mouseX >= 414 && mouseX <= 440) && (mouseY >= 610 && mouseY <= 650)){
+  lampValue++;
+  if (lampValue == 3) {   // Cheshire's Room
+    lampValue = 0;
   }
 }
-if (((mouseX >= 150 && mouseX <= 160) && (mouseY >= 635 && mouseY <= 665)) ||
-    ((mouseX >= 180 && mouseX <= 185) && (mouseY >= 645 && mouseY <= 665))) 
-
+if ((mouseX >= 143 && mouseX <= 221) && (mouseY >= 556 && mouseY <= 715)) 
 {
-  imgValue++;
-  if (imgValue == 2) {
-    imgValue = 0;
+  doorValue++;
+  if (doorValue == 2) {
+    doorValue = 0;
   }
+  }
+
+  if(doorValue == 1){ //Once you open the door, you've let cat in
+    catInside = 1;
   }
 }
 
+function bubbles(y1, y2, y3){
+  ellipse(89, y1, 5, 5)
+  ellipse(149, y2, 7, 7)
+  ellipse(184, y3, 5, 5)
+}
 
 
 //Classes
@@ -400,41 +450,7 @@ class eclipse{
         line(x,y, x1,x2)
         }
     }
-  }
-  //This method used the overlappingg ellipse design to make a clock.
-  clock(color, lineSpace){
-    push();
-    stroke(color)
-    strokeWeight(1) //this isnt working?
-    ellipse(this.x, this.y, this.w, this.h)
-    ellipse(this.x1, this.y1, this.w1, this.h1)
 
-    ellipse()
-
-    this.build(0, 360, lineSpace, 0)
-
-    ellipse(this.x1, this.y1, this.w1*.9, this.h1*.9) //
-    ellipse(this.x1, this.y1, this.w1*.85, this.h1*.85)
-
-
-
-    ellipse(this.x1, this.y1, this.w1/2, this.h1/2) //mid outter circle
-    ellipse(this.x1, this.y1, this.w1/1.9) //mid inner circle
-
-    strokeWeight(.5)//not working?
-    line(this.x, this.y + 30, this.x, this.y - 30) //Hour Hand
-    fill("black")
-    quad(this.x, this.y - 30, this.x - 5, this.y - 35,
-       this.x, this.y - 60, this.x + 5, this.y - 35)
-    line(this.x, this.y, this.x, this.y - 70)
-
-    strokeWeight(this.w/50)
-    ellipse(this.x, this.y, 2) //Clock center circle
-    ellipse(this.x, this.y + 23, .7) //Hour Hand small circle
-    ellipse(this.x, this.y + 30, 2)  //Hour Hand large circle
-    
-
-    pop();
   }
 
   mushroom(color, lineSpace, headHeight, Lstart, Rend, slitHeight){
@@ -445,26 +461,12 @@ class eclipse{
     this.build(0, 360, lineSpace, 0)
     arc(this.x1, this.y1, this.w1, headHeight, 180, 0) //Mushroom Head
 
-
-
-    //The left and right stems are arcs of ellipses
-    // leftStem = arc(this.x - this.w1*.35, this.y1, this.w1*.5, headHeight*2.1, Lstart, 90)
-    // rightStem = arc(this.x + this.w1*.2, this.y1, this.w1*.5, headHeight*2.7, 95, Rend)
-    // ellipse(this.x - this.w1*.35, this.y1, this.w1*.5, headHeight*2.1)
-    // ellipse(this.x + this.w1*.2, this.y1, this.w1*.5, headHeight*2.7)
-
-    //Dividing stem lines. 
-    // I used parametric ellipse equation to calcualte point on the arc to middle of stem.
-    // line(this.x - this.w1*.35 + (this.w1*.5/2) * cos(74),    //left line detail
-    //      this.y1 + ( headHeight*2.1/2) * sin(74),
-    //      this.x1 - 2, this.y1 + headHeight*slitHeight)
-   
-    // line(this.x + this.w1*.2 + (this.w1*.5/2)*cos(130),  //right detail line
-    //       this.y1 + (headHeight*2.7/2)*sin(130),
-    //      this.x1 - 2, this.y1 + headHeight*slitHeight)
-
-    ellipse(this.x, this.y + headHeight, this.w, this.h)
-    line(this.x, this.y, this.x, this.y + headHeight)
+    line(this.x, this.y + this.h, this.x, this.y + headHeight)
+    line(this.x + this.w/7, this.y + this.h, this.x, this.y + headHeight/2)
+    line(this.x, this.y + headHeight/2, this.x + this.w/7, this.y + headHeight*1.1)
+    //line(this.x, this.y + headHeight, this.x + this.w/8, this.y + headHeight*1.1)
+    push()
+    pop()
 
     let stemSize = this.w
     let yPos = this.y
@@ -474,6 +476,14 @@ class eclipse{
         yPos += 2;
         stemSize -= 8
       }
+
     }
+
+  }
+
+  diamond(color){
+    stroke(color)
+    this.build(0, 360,  2 + abs(3*cos(infinity)), 0)
+
   }
 }
